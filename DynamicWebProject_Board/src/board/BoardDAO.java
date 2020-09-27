@@ -116,7 +116,7 @@ public class BoardDAO {
 		return false;
 	}
 	
-	public BoardVO getBoardVO(int num) {
+	public BoardVO getBoardVO(int num) { //view >해당 num으로 글정보 출력
 		String SQL="select * from board where num=?";
 		try {
 			PreparedStatement pstmt = conn.prepareStatement(SQL);
@@ -136,5 +136,32 @@ public class BoardDAO {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public int update(int num, String title, String content) {
+		String SQL = "update board set title=?, content=? where num=?";
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1, title);
+			pstmt.setString(2, content);	
+			pstmt.setInt(3, num);
+			return pstmt.executeUpdate(); //insert문에는 update를 사용한다.
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public int delete(int num) {
+		
+		String SQL = "update board set available=0 where num=?";
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(SQL);	
+			pstmt.setInt(1, num);
+			return pstmt.executeUpdate(); //insert문에는 update를 사용한다.
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return -1;
 	}
 }

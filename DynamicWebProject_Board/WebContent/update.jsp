@@ -18,7 +18,15 @@
 		if(session.getAttribute("id")!=null){
 			id = (String) session.getAttribute("id");
 		}
-		int num =0;
+		
+		if(id==null){
+			PrintWriter script = response.getWriter();
+			script.println("<script>");
+			script.println("alert('로그인 하세요.')");
+			script.println("location.href='login.jsp'");
+			script.println("</script>");
+		}
+		int num=0;
 		if(request.getParameter("num")!=null){
 			num = Integer.parseInt(request.getParameter("num"));
 		}
@@ -29,8 +37,17 @@
 			script.println("location.href='bbs.jsp'");
 			script.println("</script>");
 		}
-		//유효한 글일 경우(해당 num에 관련한 글의 정보를 가져온다.)
+		/* 해당글의 id와 현재 session의 id정보가 같은지 */
 		BoardVO boardVO = new BoardDAO().getBoardVO(num);
+		if(!id.equals(boardVO.getId())){
+			PrintWriter script = response.getWriter();
+			script.println("<script>");
+			script.println("alert('권한이 없습니다.')");
+			script.println("location.href='bbs.jsp'");
+			script.println("</script>");
+		}
+		
+		
 	%>
 		
 <nav class="navbar navbar-default">
@@ -50,24 +67,6 @@
 			<li class="active"><a href="bbs.jsp">게시판</a></li>
 		</ul>
 		
-		<%
-			if(id == null){
-		%>
-			<ul class="nav navbar-nav navbar-right">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" 
-					role="button" aria-haspopup="true"  aria-expanded="false">접속하기<span class="caret"></span></a>
-					  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-					    <li><a class="dropdown-item" href="login.jsp">로그인</a></li>
-					    <li><a class="dropdown-item" href="join.jsp">회원가입</a></li>
-					    
-					  </ul>
-				</li>
-			</ul>		
-		<% 
-			} else {
-		%>
-		
 		<ul class="nav navbar-nav navbar-right">
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" 
@@ -78,53 +77,34 @@
 					  </ul>
 				</li>
 			</ul>
-		<% 
-			}
-		%>
+
+
 	</div>
 </nav>
 
 <div class="container">
 	<div class="row">
+		<form method="post" action="updateAction.jsp?num=<%= num %>" >
 		<table class="table table-striped" style="text-align: center; border: 1px solid #dddddd">
 			<thead>
 				<tr><!-- 행 -->
-					<th colspan="3" style="background-color: #eeeeee; text-align:center;">게시판 글보기</th><!-- 열 -->
+					<th colspan="2" style="background-color: #eeeeee; text-align:center;">게시판 글 수정 양식</th><!-- 열 -->
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td style="width: 20%;">글 제목</td>
-					<td colspan="2"><%= boardVO.getTitle() %></td>
+					<td><input type="text" class="form-control" placeholder="글 제목" name="title" maxlength="50" value="<%= boardVO.getTitle()%>"></td>
 				</tr>
 				<tr>
-					<td>작성자</td>
-					<td colspan="2"><%= boardVO.getId() %></td>
-				</tr>
-				<tr>
-					<td>작성일자</td>
-					<td colspan="2"><%= boardVO.getDate() %></td>
-				</tr>
-				<tr>
-					<td>내용</td>
-					<td colspan="2" style="min-height: 200px; text-align: left;">
-					<!-- replaceAll : 해당글자 정상출력 처리해주기 -->
-						<%= boardVO.getContent().replaceAll(" ", "&nbsp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>") %>
-					</td>
+					<td><textarea class="form-control" placeholder="글 내용" name="content" maxlength="2048" style="height: 350px; resize: none;">
+						<%= boardVO.getContent() %>
+					</textarea></td>
 				</tr>
 			</tbody>
 		</table>
-
-		<a href="bbs.jsp" class="btn btn-success">목록</a>
+			<input type="submit" class="btn btn-primary pull-right" value="글수정">
+		</form>
 		
-		<%
-		if(id!=null && id.equals(boardVO.getId())){
-		%>
-			<a href="update.jsp?num=<%= num%>" class="btn btn-primary">수정</a>
-			<a onclick="return confirm('정말로 삭제하시겠습니까?')"  href="deleteAction.jsp?num=<%= num%>" class="btn btn-danger">삭제</a>
-		<%
-		}
-		%>
 	</div>
 </div>
 
