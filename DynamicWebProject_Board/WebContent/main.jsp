@@ -7,6 +7,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width", initial-scale="1.0">
 <link rel="stylesheet" href="css/bootstrap.css">
+<link rel="stylesheet" href="css/custom.css">
 
 <title>Test_Board</title>
 </head>
@@ -69,7 +70,14 @@
 	</div>
 </nav>
 
-
+<div class="container">
+	<div class="jumbotron">
+		<div class="container">
+		<h1>웹사이트 소개</h1>
+		<h3>bootstrap을 이용해만든 게시판입니다.</h3>
+		</div>
+	</div>
+</div>
 
 <!-- jquery : $(".클래스이름") 이런형태 -->
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
