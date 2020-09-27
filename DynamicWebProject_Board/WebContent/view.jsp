@@ -3,20 +3,13 @@
 <%@ page import="java.io.PrintWriter" %>
 <%@ page import="board.BoardVO" %>
 <%@ page import="board.BoardDAO" %>
-<%@ page import="java.util.ArrayList" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width", initial-scale="1.0">
 <link rel="stylesheet" href="css/bootstrap.css">
-<style type="text/css">
-	a,a:hover {
-		color : #000000;
-		text-decoration : none;
-		font-weight: bold;
-	}
-</style>
+
 <title>Test_Board</title>
 </head>
 <body>
@@ -25,11 +18,19 @@
 		if(session.getAttribute("id")!=null){
 			id = (String) session.getAttribute("id");
 		}
-		
-		int pageNumber=1;
-		if(request.getParameter("pageNumber")!=null){ //페이지번호 파라미터로 넘기기
-			pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
+		int num =0;
+		if(request.getParameter("num")!=null){
+			num = Integer.parseInt(request.getParameter("num"));
 		}
+		if(num == 0){
+			PrintWriter script = response.getWriter();
+			script.println("<script>");
+			script.println("alert('유효하지 않은 글입니다.')");
+			script.println("location.href='bbs.jsp'");
+			script.println("</script>");
+		}
+		//유효한 글일 경우(해당 num에 관련한 글의 정보를 가져온다.)
+		BoardVO boardVO = new BoardDAO().getBoardVO(num);
 	%>
 		
 <nav class="navbar navbar-default">
@@ -88,41 +89,42 @@
 		<table class="table table-striped" style="text-align: center; border: 1px solid #dddddd">
 			<thead>
 				<tr><!-- 행 -->
-					<th style="background-color: #eeeeee; text-align: center;">번호</th><!-- 열 -->
-					<th style="background-color: #eeeeee; text-align: center;">제목</th>
-					<th style="background-color: #eeeeee; text-align: center;">작성자</th>
-					<th style="background-color: #eeeeee; text-align: center;">작성일</th>
+					<th colspan="3" style="background-color: #eeeeee; text-align:center;">게시판 글보기</th><!-- 열 -->
 				</tr>
 			</thead>
 			<tbody>
-				<% 
-					BoardDAO boardDAO = new BoardDAO();
-					ArrayList<BoardVO> list = boardDAO.getList(pageNumber);
-					for(int i=0; i<list.size(); i++){
-				%>		
 				<tr>
-					<td><%=list.get(i).getNum() %></td>
-					<td><a href="view.jsp?num=<%= list.get(i).getNum() %>"> <%=list.get(i).getTitle() %></a></td>
-					<td><%=list.get(i).getId() %></td>
-					<td><%=list.get(i).getDate() %></td>
+					<td style="width: 20%;">글 제목</td>
+					<td colspan="2"><%= boardVO.getTitle() %></td>
 				</tr>
-				<%		
-					}
-				%>
+				<tr>
+					<td>작성자</td>
+					<td colspan="2"><%= boardVO.getId() %></td>
+				</tr>
+				<tr>
+					<td>작성일자</td>
+					<td colspan="2"><%= boardVO.getDate() %></td>
+				</tr>
+				<tr>
+					<td>내용</td>
+					<td colspan="2" style="min-height: 200px; text-align: left;">
+					<!-- replaceAll : 해당글자 정상출력 처리해주기 -->
+						<%= boardVO.getContent().replaceAll(" ", "&nbsp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>") %>
+					</td>
+				</tr>
 			</tbody>
 		</table>
+
+		<a href="bbs.jsp" class="btn btn-success">목록</a>
 		
 		<%
-			if(pageNumber != 1){
+		if(id!=null && id.equals(boardVO.getId())){
 		%>
-			<a href="bbs.jsp?pageNumber=<%=pageNumber-1%>" class="btn btn-success btn-arrow-left">이전</a>
-		<%  } if(boardDAO.nextPage(pageNumber+1)){ %>
-			<a href="bbs.jsp?pageNumber=<%=pageNumber+1%>" class="btn btn-success btn-arrow-left">다음</a>
-		<% 
-			}
+			<a href="update.jsp?num=<%= num%>" class="btn btn-primary">수정</a>
+			<a href="deleteAction.jsp?num=<%= num%>" class="btn btn-danger">삭제</a>
+		<%
+		}
 		%>
-		
-		<a href="write.jsp" class="btn btn-primary pull-right">글쓰기</a>
 	</div>
 </div>
 
