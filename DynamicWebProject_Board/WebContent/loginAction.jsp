@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="member.MemberDAO" %>
-<%@ page import="java.io.PrintWriter" %>
+<%@ page import="java.io.PrintWriter" %><!-- 문자출력 스트림 -->
 <% request.setCharacterEncoding("UTF-8"); %><!-- 받아오는 모든 정보를 utf-8형식으로 바꿔주기 -->
-
+<!-- java beans -->
 <jsp:useBean id="member" class="member.MemberVO" scope="page"/>
 <jsp:setProperty name="member" property="id"/>
 <jsp:setProperty name="member" property="pw"/>
@@ -14,11 +14,24 @@
 <title>Test_Board</title>
 </head>
 <body>
- 	<!-- java script -->
+ 	<!-- java class -->
 	<%
+		String id = null;
+		if(session.getAttribute("id")!=null){
+			id = (String) session.getAttribute("id");
+		}
+		if(id!=null){
+			PrintWriter script = response.getWriter();
+			script.println("<script>");
+			script.println("alert('이미 로그인이 되어있습니다.')");
+			script.println("location.href = 'main.jsp'");			
+			script.println("</script>");
+		}
+	
 		MemberDAO memberDAO = new MemberDAO();
 		int result = memberDAO.login(member.getId(), member.getPw());
 		if(result == 1){
+			session.setAttribute("id", member.getId()); //session값 저장
 			PrintWriter script = response.getWriter();
 			script.println("<script>");
 			script.println("location.href = 'main.jsp'");

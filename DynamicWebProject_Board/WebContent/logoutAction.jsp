@@ -7,8 +7,11 @@
 <title>Test_Board</title>
 </head>
 <body>
+	<%
+		session.invalidate();
+	%>
 	<script type="text/javascript">
-		location.href='main.jsp';
+		location.href="main.jsp";
 	</script>
 </body>
 </html>

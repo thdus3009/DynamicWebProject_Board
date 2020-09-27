@@ -28,7 +28,7 @@ public class MemberDAO {
 		try {
 			pstmt = conn.prepareStatement(SQL);
 			pstmt.setString(1,id);
-			rs = pstmt.executeQuery();
+			rs = pstmt.executeQuery(); //select문일때는 executeQuery문 insert일때는 executeUpdate
 			if(rs.next()) {
 				if(rs.getString(1).equals(pw)) { //setString(1,id)을 넣었을 때의 결과값(pw)
 					return 1;
